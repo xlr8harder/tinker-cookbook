@@ -99,8 +99,10 @@ async def run_evals(
 ) -> dict[str, float]:
     """Evaluate the current model weights and prefix results with ``test/``.
 
-    The helper is called immediately before optimizer step `step` is submitted, so it
-    measures the weights produced after step `step-1` (or the initial weights for step 0).
+    The helper is usually called immediately before optimizer step `step` is submitted,
+    so it measures the weights produced after step `step-1` (or the initial weights for step 0).
+    It is also used at the end of training with `step=total_steps` to evaluate the final
+    post-training weights.
     Training-client evaluators run against the mutable training client, while sampling
     evaluators request a fresh `SamplingClient` snapshot via
     `save_weights_and_get_sampling_client_async` to ensure their work uses a fixed
@@ -355,6 +357,19 @@ async def main(config: Config):
         await finish_batch(pending_batch)
 
     if start_epoch < config.num_epochs:
+        final_eval_step = total_steps
+        final_metrics: dict[str, float] = {}
+        if evaluators and config.eval_every > 0:
+            final_metrics.update(
+                await run_evals(evaluators, training_client, final_eval_step)
+            )
+        if infrequent_evaluators and config.infrequent_eval_every > 0:
+            final_metrics.update(
+                await run_evals(infrequent_evaluators, training_client, final_eval_step)
+            )
+        if final_metrics:
+            ml_logger.log_metrics(metrics=final_metrics, step=final_eval_step)
+
         await checkpoint_utils.save_checkpoint_async(
             training_client=training_client,
             name="final",
