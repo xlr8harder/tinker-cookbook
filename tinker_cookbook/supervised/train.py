@@ -71,6 +71,10 @@ class Config:
     adam_eps: float = 1e-8
     adam_grad_clip_norm: float = 0.0  # 0.0 = disabled
 
+    # Optimizer metric logging (0 = disabled)
+    optim_metrics_every: int = 0
+    optim_metrics_keys: list[str] = chz.field(default_factory=list)  # empty = all keys
+
     # Logging parameters
     wandb_project: str | None = None
     wandb_name: str | None = None
@@ -316,7 +320,24 @@ async def main(config: Config):
 
         with timed("step", metrics):
             fwd_bwd_result = await submitted.fwd_bwd_future.result_async()
-            await submitted.optim_step_future.result_async()
+            optim_step_result = await submitted.optim_step_future.result_async()
+
+        if (
+            config.optim_metrics_every > 0
+            and submitted.step % config.optim_metrics_every == 0
+            and optim_step_result.metrics
+        ):
+            raw_optim_metrics = optim_step_result.metrics
+            if config.optim_metrics_keys:
+                raw_optim_metrics = {
+                    key: value
+                    for key, value in raw_optim_metrics.items()
+                    if key in config.optim_metrics_keys
+                }
+            if raw_optim_metrics:
+                metrics.update(
+                    {f"optim/{key}": value for key, value in raw_optim_metrics.items()}
+                )
 
         logprobs = [x["logprobs"] for x in fwd_bwd_result.loss_fn_outputs]
         weights = [datum.loss_fn_inputs["weights"] for datum in submitted.data]
