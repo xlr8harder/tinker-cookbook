@@ -19,12 +19,18 @@ def conversation_to_datum(
     renderer: Renderer,
     max_length: int | None,
     train_on_what: TrainOnWhat = TrainOnWhat.ALL_ASSISTANT_MESSAGES,
+    normalize_weights: bool = False,
 ) -> tinker.Datum:
     """Common function to process a list of messages into a Datum."""
     model_input, weights = renderer.build_supervised_example(
         conversation, train_on_what=train_on_what
     )
-    return datum_from_model_input_weights(model_input, weights, max_length)
+    return datum_from_model_input_weights(
+        model_input,
+        weights,
+        max_length,
+        normalize_weights=normalize_weights,
+    )
 
 
 def _one_of(a: Any, b: Any) -> bool:
@@ -153,7 +159,11 @@ class FromConversationFileBuilder(ChatDatasetBuilder):
         # Define mapping function
         def map_fn(row: dict) -> tinker.Datum:
             return conversation_to_datum(
-                row["messages"], self.renderer, self.common_config.max_length, train_on_what
+                row["messages"],
+                self.renderer,
+                self.common_config.max_length,
+                train_on_what,
+                normalize_weights=self.common_config.normalize_weights,
             )
 
         # Create supervised dataset
