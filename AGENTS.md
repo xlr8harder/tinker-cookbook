@@ -64,7 +64,7 @@ Agents often struggle with the nested type hierarchy. Key resources:
 - `TensorData` = wrapper for numpy/torch arrays with shape info
 
 **Helper functions** (use these instead of manual construction):
-- `datum_from_model_input_weights(model_input, weights, max_length)` - SL datum creation (`supervised/common.py`)
+- `datum_from_model_input_weights(model_input, weights, max_length, normalize_weights)` - SL datum creation (`supervised/common.py`)
 - `conversation_to_datum(messages, renderer, max_length, train_on_what)` - Full pipeline (`supervised/data.py`)
 - `renderer.build_supervised_example(messages)` - Returns (ModelInput, weights)
 - `ModelInput.from_ints(tokens)` - Create from token list

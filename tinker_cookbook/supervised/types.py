@@ -58,6 +58,7 @@ class ChatDatasetBuilderCommonConfig:
     max_length: int | None
     batch_size: int
     train_on_what: renderers.TrainOnWhat | None = None
+    normalize_weights: bool = False  # Normalize per-example weights to sum to 1.
 
 
 @chz.chz

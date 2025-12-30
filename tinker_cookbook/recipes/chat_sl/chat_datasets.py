@@ -39,7 +39,11 @@ class Tulu3Builder(ChatDatasetBuilder):
         # take the last 1000 as test, the rest as train
         def map_fn(row: dict) -> tinker.Datum:
             return conversation_to_datum(
-                row["messages"], self.renderer, self.common_config.max_length, train_on_what
+                row["messages"],
+                self.renderer,
+                self.common_config.max_length,
+                train_on_what,
+                normalize_weights=self.common_config.normalize_weights,
             )
 
         return SupervisedDatasetFromHFDataset(
@@ -67,7 +71,11 @@ class NoRobotsBuilder(ChatDatasetBuilder):
 
         def map_fn(row: dict) -> tinker.Datum:
             return conversation_to_datum(
-                row["messages"], self.renderer, self.common_config.max_length, train_on_what
+                row["messages"],
+                self.renderer,
+                self.common_config.max_length,
+                train_on_what,
+                normalize_weights=self.common_config.normalize_weights,
             )
 
         return SupervisedDatasetFromHFDataset(

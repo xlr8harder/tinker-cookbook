@@ -71,7 +71,11 @@ class OpenThoughts3Builder(ChatDatasetBuilder):
                 for msg in conversations
             ]
             return conversation_to_datum(
-                messages, self.renderer, self.common_config.max_length, train_on_what
+                messages,
+                self.renderer,
+                self.common_config.max_length,
+                train_on_what,
+                normalize_weights=self.common_config.normalize_weights,
             )
 
         train_dataset = StreamingSupervisedDatasetFromHFDataset(
