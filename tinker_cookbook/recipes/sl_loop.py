@@ -30,6 +30,7 @@ class Config:
     train_on_what: renderers.TrainOnWhat = renderers.TrainOnWhat.ALL_ASSISTANT_MESSAGES
     lora_rank: int = 32
     save_every: int = 20  # 0 = disabled
+    grad_clip_norm: float = 0.0  # 0.0 = disabled
 
 
 def main(config: Config):
@@ -98,7 +99,13 @@ def main(config: Config):
         # Linear learning rate schedule
         lr_mult = max(0.0, 1.0 - step / n_train_batches)
         current_lr = config.learning_rate * lr_mult
-        adam_params = tinker.AdamParams(learning_rate=current_lr, beta1=0.9, beta2=0.95, eps=1e-8)
+        adam_params = tinker.AdamParams(
+            learning_rate=current_lr,
+            beta1=0.9,
+            beta2=0.95,
+            eps=1e-8,
+            grad_clip_norm=config.grad_clip_norm,
+        )
 
         # Get training batch and convert to datums online
         batch_start = batch_idx * config.batch_size
