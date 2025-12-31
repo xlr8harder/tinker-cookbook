@@ -335,9 +335,7 @@ async def main(config: Config):
                     if key in config.optim_metrics_keys
                 }
             if raw_optim_metrics:
-                metrics.update(
-                    {f"optim/{key}": value for key, value in raw_optim_metrics.items()}
-                )
+                metrics.update({f"optim/{key}": value for key, value in raw_optim_metrics.items()})
 
         logprobs = [x["logprobs"] for x in fwd_bwd_result.loss_fn_outputs]
         weights = [datum.loss_fn_inputs["weights"] for datum in submitted.data]
@@ -383,9 +381,7 @@ async def main(config: Config):
         final_eval_step = total_steps
         final_metrics: dict[str, float] = {}
         if evaluators and config.eval_every > 0:
-            final_metrics.update(
-                await run_evals(evaluators, training_client, final_eval_step)
-            )
+            final_metrics.update(await run_evals(evaluators, training_client, final_eval_step))
         if infrequent_evaluators and config.infrequent_eval_every > 0:
             final_metrics.update(
                 await run_evals(infrequent_evaluators, training_client, final_eval_step)
