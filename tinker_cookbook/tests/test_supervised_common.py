@@ -6,7 +6,7 @@ from tinker_cookbook.supervised.common import datum_from_model_input_weights
 
 
 def _get_weights(datum: tinker.Datum) -> list[float]:
-    return datum.loss_fn_inputs["weights"].data
+    return [float(value) for value in datum.loss_fn_inputs["weights"].data]
 
 
 def test_normalize_weights_enabled():
