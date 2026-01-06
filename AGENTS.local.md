@@ -1,7 +1,7 @@
-# Local Agent Instructions (Not for Git)
+# Local Agent Instructions
 
-This file is local-only and should never be committed. It defines the workflow
-we want to follow so changes stay clean and easy to PR or cherry-pick upstream.
+This file documents the workflow we want to follow so changes stay clean and
+easy to PR or cherry-pick upstream.
 
 ## Workflow goals
 - Keep `main` fast-forwardable and in sync with `upstream/main`.
