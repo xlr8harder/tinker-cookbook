@@ -81,9 +81,6 @@ class Config:
 
     enable_trace: bool = False
 
-    # Set to False if the caller already configures the logging module
-    do_configure_logging_module: bool = True
-
 
 @dataclass
 class SubmittedBatch:
@@ -184,7 +181,7 @@ async def main(config: Config):
         wandb_project=config.wandb_project,
         wandb_name=config.wandb_name,
         config=config,
-        do_configure_logging_module=config.do_configure_logging_module,
+        do_configure_logging_module=True,
     )
     if config.enable_trace:
         # Get and rename the current (main) task
